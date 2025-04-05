@@ -49,3 +49,4 @@ test-results/
 
 # MacOS system files
 .DS_Store
+.vercel
