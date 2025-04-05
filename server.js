@@ -70,7 +70,7 @@ app.get('/api/merchants', async (req, res) => {
 
 app.post('/api/merchants', async (req, res) => {
     try {
-        const body = await req.body();
+        const body = await req.body;
         const { name, latitude, longitude } = body;
 
 
