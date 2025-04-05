@@ -68,5 +68,25 @@ app.get('/api/merchants', async (req, res) => {
     }
 });
 
+app.post('/api/merchants', async (req, res) => {
+    try {
+        const body = await req.json();
+        const { name, latitude, longitude } = body;
+
+
+        const merchant = await prisma.merchants.create({
+            data: {
+                name,
+                latitude,
+                longitude
+            },
+        });
+
+        return res.json(merchant, { status: 201 });
+    } catch (error) {
+        return res.json({ error: `Invalid request: ${error}` }, { status: 400 });
+    }
+})
+
 // Remove the app.listen call as it's not needed in serverless
 module.exports = app;
