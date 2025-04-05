@@ -7,10 +7,32 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+app.get('/', (req, res) => {
+    res.send('Express API is running!');
+});
 // Routes - Fixed this part
-app.get('/api/users', (req, res) => {
-    res.json({ message: "express api worked" });
+app.get('/api/users', async(req, res) => {
+    try {
+        const users = await prisma.users.findMany({
+            orderBy: {
+                id: 'asc',
+            },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                role: true,
+                created_at: true,
+            },
+        });
+        return res.json(users);
+    } catch (error) {
+        return res.json(
+            { error: 'Failed to fetch users' },
+            { status: 500 }
+        );
+    }
 });
 
 // Start server

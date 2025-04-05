@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  firstName  String   @db.VarChar(50)
+  lastName   String   @db.VarChar(50)
+  password   String
+  role       String   @default("user")
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+}
+
+model merchants {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(50)
+  longitude  Decimal
+  latitude   Decimal
+  image      String?
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+}
+
+model roles {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt
+  role_permissions role_permissions[]
+}
+
+model permissions {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique // e.g., 'view_dashboard', 'edit_merchants', etc.
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt
+  role_permissions role_permissions[]
+}
+
+model role_permissions {
+  id           Int         @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+  role         roles       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   permissions @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+}
