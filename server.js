@@ -9,6 +9,7 @@ const merchantRoutes = require('./src/routes/merchantRoutes');
 const rolePermissionRoutes = require('./src/routes/rolePermissionRoutes');
 const permissionRoutes = require('./src/routes/permissionRoutes');
 const roleRoutes = require('./src/routes/roleRoutes');
+const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/merchants', merchantRoutes);
 app.use('/api/role-permissions', rolePermissionRoutes);
