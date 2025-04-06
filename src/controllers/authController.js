@@ -55,7 +55,7 @@ const login = async (req, res) => {
 
         res.cookie('token', token, cookieOptions);
 
-        console.log("SUCCESS LOGIN");
+        console.log("SUCCESS LOGIN", token);
         res.status(200).json({ 
             success: true,
             user: {

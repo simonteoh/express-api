@@ -53,15 +53,15 @@ app.get('/api/health', async (req, res) => {
 app.use('/api/auth', authRoutes);
 
 // Apply auth middleware to all routes except API routes and static files
-app.use((req, res, next) => {
-    // Skip middleware for API routes and static files
-    if (req.path.startsWith('/api') || 
-        req.path.startsWith('/_next') || 
-        req.path === '/favicon.ico') {
-        return next();
-    }
-    authMiddleware(req, res, next);
-});
+// app.use((req, res, next) => {
+//     // Skip middleware for API routes and static files
+//     if (req.path.startsWith('/api') || 
+//         req.path.startsWith('/_next') || 
+//         req.path === '/favicon.ico') {
+//         return next();
+//     }
+//     authMiddleware(req, res, next);
+// });
 
 // Protected routes (require auth)
 app.use('/api/users', userRoutes);
