@@ -24,12 +24,12 @@ const prisma = new PrismaClient({
 
 // CORS configuration
 const corsOptions = {
-    origin: process.env.NODE_ENV === 'production' 
-        ? process.env.FRONTEND_URL 
-        : 'http://localhost:3000',
-    credentials: true,  // This is crucial for cookies
+    origin: true, // Allow all origins temporarily for debugging
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie'],
+    preflightContinue: false
 };
 
 // Middleware

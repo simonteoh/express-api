@@ -47,10 +47,9 @@ const login = async (req, res) => {
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax', // Changed from 'none' to 'lax' for better compatibility
+            sameSite: 'lax',
             maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
             path: '/',
-            // Remove domain setting as it might cause issues
         };
 
         // Set the cookie
@@ -59,6 +58,12 @@ const login = async (req, res) => {
         // Log cookie details for debugging
         console.log("Cookie Options:", cookieOptions);
         console.log("Setting cookie for domain:", req.get('origin'));
+
+        // Set CORS headers explicitly
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.header('Access-Control-Allow-Origin', req.get('origin'));
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
 
         res.status(200).json({ 
             success: true,
@@ -84,10 +89,16 @@ const logout = async (req, res) => {
             sameSite: 'lax',
             maxAge: 0, // Expire immediately
             path: '/',
-            // Remove domain setting as it might cause issues
         };
 
         res.cookie('token', '', cookieOptions);
+        
+        // Set CORS headers explicitly
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.header('Access-Control-Allow-Origin', req.get('origin'));
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
+
         res.status(200).json({ success: true });
     } catch (error) {
         console.error('Logout error:', error);
