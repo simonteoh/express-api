@@ -46,16 +46,20 @@ const login = async (req, res) => {
         // Set cookie with appropriate settings for both development and production
         const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Only use secure in production
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Use 'none' in production for cross-site requests
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax', // Changed from 'none' to 'lax' for better compatibility
             maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-            path: '/', // Make cookie available across all paths
-            domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined // Set domain in production
+            path: '/',
+            // Remove domain setting as it might cause issues
         };
 
+        // Set the cookie
         res.cookie('token', token, cookieOptions);
 
-        console.log("SUCCESS LOGIN", token);
+        // Log cookie details for debugging
+        console.log("Cookie Options:", cookieOptions);
+        console.log("Setting cookie for domain:", req.get('origin'));
+
         res.status(200).json({ 
             success: true,
             user: {
@@ -77,10 +81,10 @@ const logout = async (req, res) => {
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            sameSite: 'lax',
             maxAge: 0, // Expire immediately
             path: '/',
-            domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
+            // Remove domain setting as it might cause issues
         };
 
         res.cookie('token', '', cookieOptions);
