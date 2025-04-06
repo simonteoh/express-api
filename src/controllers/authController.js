@@ -47,9 +47,10 @@ const login = async (req, res) => {
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
             maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
             path: '/',
+            domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
         };
 
         // Set the cookie
@@ -60,8 +61,12 @@ const login = async (req, res) => {
         console.log("Setting cookie for domain:", req.get('origin'));
 
         // Set CORS headers explicitly
+        const origin = process.env.NODE_ENV === 'production' 
+            ? process.env.FRONTEND_URL 
+            : 'http://localhost:3000';
+
         res.header('Access-Control-Allow-Credentials', 'true');
-        res.header('Access-Control-Allow-Origin', req.get('origin'));
+        res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
 
@@ -86,16 +91,21 @@ const logout = async (req, res) => {
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
             maxAge: 0, // Expire immediately
             path: '/',
+            domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
         };
 
         res.cookie('token', '', cookieOptions);
         
         // Set CORS headers explicitly
+        const origin = process.env.NODE_ENV === 'production' 
+            ? process.env.FRONTEND_URL 
+            : 'http://localhost:3000';
+
         res.header('Access-Control-Allow-Credentials', 'true');
-        res.header('Access-Control-Allow-Origin', req.get('origin'));
+        res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
 
