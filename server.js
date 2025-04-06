@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
+const cookieParser = require('cookie-parser');
 
 // Import routes
 const userRoutes = require('./src/routes/userRoutes');
@@ -10,6 +11,9 @@ const rolePermissionRoutes = require('./src/routes/rolePermissionRoutes');
 const permissionRoutes = require('./src/routes/permissionRoutes');
 const roleRoutes = require('./src/routes/roleRoutes');
 const authRoutes = require('./src/routes/authRoutes');
+
+// Import middleware
+const authMiddleware = require('./src/middleware/authMiddleware');
 
 const app = express();
 
@@ -21,6 +25,7 @@ const prisma = new PrismaClient({
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 3001;
 
@@ -44,8 +49,21 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
-// Routes
+// API routes (no auth required)
 app.use('/api/auth', authRoutes);
+
+// Apply auth middleware to all routes except API routes and static files
+app.use((req, res, next) => {
+    // Skip middleware for API routes and static files
+    if (req.path.startsWith('/api') || 
+        req.path.startsWith('/_next') || 
+        req.path === '/favicon.ico') {
+        return next();
+    }
+    authMiddleware(req, res, next);
+});
+
+// Protected routes (require auth)
 app.use('/api/users', userRoutes);
 app.use('/api/merchants', merchantRoutes);
 app.use('/api/role-permissions', rolePermissionRoutes);
