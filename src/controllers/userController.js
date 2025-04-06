@@ -2,29 +2,6 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
-const createUser = async (req, res) => {
-    try {
-        const { email, firstName, lastName, password } = req.body;
-
-        // Hash the password before storing it
-        const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
-
-        const user = await prisma.users.create({
-            data: {
-                email,
-                firstName,
-                lastName,
-                password: hashedPassword, // Store the hashed password
-            },
-        });
-
-        res.status(201).json(user);
-    } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(400).json({ error: `Invalid request: ${error.message}` });
-    }
-};
-
 const registerUser = async (req, res) => {
     try {
         const { email, password, firstName, lastName, role } = req.body;
@@ -42,7 +19,7 @@ const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create user
-        await prisma.users.create({
+        const user = await prisma.users.create({
             data: {
                 email,
                 password: hashedPassword,
@@ -50,9 +27,16 @@ const registerUser = async (req, res) => {
                 lastName,
                 role,
             },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                role: true,
+            },
         });
 
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json(user);
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ error: 'Registration failed', details: error.message });
@@ -74,7 +58,6 @@ const getAllUsers = async (req, res) => {
                 created_at: true,
             },
         });
-        console.log("success get users");
         res.json(users);
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -161,7 +144,6 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
-    createUser,
     registerUser,
     getAllUsers,
     getUserById,
